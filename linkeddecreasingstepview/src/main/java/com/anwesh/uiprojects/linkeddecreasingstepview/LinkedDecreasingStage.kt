@@ -7,6 +7,7 @@ package com.anwesh.uiprojects.linkeddecreasingstepview
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Canvas
+import android.graphics.Color
 import android.view.View
 import android.view.MotionEvent
 
@@ -122,6 +123,33 @@ class LinkedDecreasingStage (ctx : Context) : View(ctx) {
             }
             cb()
             return this
+        }
+    }
+
+    data class LinkedDecreasingStep(var i : Int) {
+
+        private var curr : DSNode = DSNode(0)
+
+        private var dir : Int = 1
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            paint.color = Color.parseColor("#00897B")
+            paint.strokeCap = Paint.Cap.ROUND
+            paint.strokeWidth = Math.min(canvas.width, canvas.height).toFloat() / 60
+            curr.draw(canvas, paint)
+        }
+
+        fun update(stopcb : (Float) -> Unit) {
+            curr.update {
+                curr = curr.getNext(dir) {
+                    dir *= -1
+                }
+                stopcb(it)
+            }
+        }
+
+        fun startUpdating(startcb : () -> Unit) {
+            curr.startUpdating(startcb)
         }
     }
 }
