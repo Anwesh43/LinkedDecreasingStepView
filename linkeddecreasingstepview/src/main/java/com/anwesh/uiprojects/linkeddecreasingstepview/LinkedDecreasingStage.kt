@@ -20,6 +20,12 @@ class LinkedDecreasingStage (ctx : Context) : View(ctx) {
 
     private val renderer : Renderer = Renderer(this)
 
+    var onCompletionListener : CompletionListener? = null
+
+    fun addOnCompletionListener(onComplete : (Int) -> Unit) {
+        onCompletionListener = CompletionListener(onComplete)
+    }
+
     override fun onDraw(canvas : Canvas) {
         renderer.render(canvas, paint)
     }
@@ -109,8 +115,10 @@ class LinkedDecreasingStage (ctx : Context) : View(ctx) {
             next?.draw(canvas, paint)
         }
 
-        fun update(stopcb : (Float) -> Unit) {
-            state.update(stopcb)
+        fun update(stopcb : (Int, Float) -> Unit) {
+            state.update {
+                stopcb(i, it)
+            }
         }
 
         fun startUpdating(startcb : () -> Unit) {
@@ -143,12 +151,12 @@ class LinkedDecreasingStage (ctx : Context) : View(ctx) {
             curr.draw(canvas, paint)
         }
 
-        fun update(stopcb : (Float) -> Unit) {
-            curr.update {
+        fun update(stopcb : (Int, Float) -> Unit) {
+            curr.update {j, scale ->
                 curr = curr.getNext(dir) {
                     dir *= -1
                 }
-                stopcb(it)
+                stopcb(j, scale)
             }
         }
 
@@ -167,8 +175,11 @@ class LinkedDecreasingStage (ctx : Context) : View(ctx) {
             canvas.drawColor(Color.parseColor("#BDBDBD"))
             lds.draw(canvas, paint)
             animator.animate {
-                lds.update {
+                lds.update {j, scale ->
                     animator.stop()
+                    when (scale) {
+                        1f -> view.onCompletionListener?.onComplete?.invoke(j)
+                    }
                 }
             }
         }
@@ -187,4 +198,6 @@ class LinkedDecreasingStage (ctx : Context) : View(ctx) {
             return view
         }
     }
+
+    data class CompletionListener(var onComplete : (Int) -> Unit)
 }
