@@ -4,6 +4,7 @@ package com.anwesh.uiprojects.linkeddecreasingstepview
  * Created by anweshmishra on 08/07/18.
  */
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Canvas
@@ -175,6 +176,14 @@ class LinkedDecreasingStage (ctx : Context) : View(ctx) {
             lds.startUpdating {
                 animator.start()
             }
+        }
+    }
+
+    companion object {
+        fun create(activity : Activity)  : LinkedDecreasingStage {
+            val view : LinkedDecreasingStage = LinkedDecreasingStage(activity)
+            activity.setContentView(view)
+            return view 
         }
     }
 }
