@@ -152,4 +152,27 @@ class LinkedDecreasingStage (ctx : Context) : View(ctx) {
             curr.startUpdating(startcb)
         }
     }
+
+    data class Renderer(var view : LinkedDecreasingStage) {
+
+        private var animator : Animator = Animator(view)
+
+        private var lds : LinkedDecreasingStep = LinkedDecreasingStep(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(Color.parseColor("#BDBDBD"))
+            lds.draw(canvas, paint)
+            animator.animate {
+                lds.update {
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            lds.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
