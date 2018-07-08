@@ -40,7 +40,7 @@ class LinkedDecreasingStage (ctx : Context) : View(ctx) {
             if (Math.abs(scale - prevScale) > 1) {
                 scale = prevScale + dir
                 dir = 0f
-                prevScale = 0f
+                prevScale = scale
                 stopcb(prevScale)
             }
         }
@@ -57,6 +57,7 @@ class LinkedDecreasingStage (ctx : Context) : View(ctx) {
 
         fun animate(cb : () -> Unit) {
             if (animated) {
+                cb()
                 try {
                     Thread.sleep(50)
                     view.invalidate()
@@ -183,7 +184,7 @@ class LinkedDecreasingStage (ctx : Context) : View(ctx) {
         fun create(activity : Activity)  : LinkedDecreasingStage {
             val view : LinkedDecreasingStage = LinkedDecreasingStage(activity)
             activity.setContentView(view)
-            return view 
+            return view
         }
     }
 }
