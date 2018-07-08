@@ -75,4 +75,53 @@ class LinkedDecreasingStage (ctx : Context) : View(ctx) {
             }
         }
     }
+
+    data class DSNode(var i : Int, val state : State = State()) {
+
+        var next : DSNode? = null
+
+        var prev : DSNode? = null
+
+        init {
+            addNeighbor()
+        }
+
+        fun addNeighbor() {
+            if (i < NODES - 1) {
+                next = DSNode(i + 1)
+                next?.prev = this
+            }
+        }
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            val w : Float = canvas.width.toFloat()
+            val h : Float = canvas.height.toFloat()
+            val hGap : Float = 0.9f * h / NODES
+            canvas.save()
+            canvas.translate(w/2, 0.05f * h + i * hGap + hGap * state.scale)
+            canvas.drawLine(-w/8, 0f, w/8, 0f, paint)
+            canvas.restore()
+            next?.draw(canvas, paint)
+        }
+
+        fun update(stopcb : (Float) -> Unit) {
+            state.update(stopcb)
+        }
+
+        fun startUpdating(startcb : () -> Unit) {
+            state.startUpdating(startcb)
+        }
+
+        fun getNext(dir : Int, cb : () -> Unit) : DSNode{
+            var curr : DSNode? = prev
+            if (dir == 1) {
+                curr = next
+            }
+            if (curr != null) {
+                return curr
+            }
+            cb()
+            return this
+        }
+    }
 }
